@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CSV表示（スマホ対応・リンク付き）</title>
+  <title>CSV表示（スマホ対応・リンク付き・日付降順）</title>
 
-  <!-- DataTables + Responsive CSS -->
+  <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
 
@@ -41,6 +41,7 @@
           skipEmptyLines: true,
           complete: function(results) {
             const data = results.data;
+
             const columns = Object.keys(data[0]).map(key => ({
               title: key,
               data: key,
@@ -49,10 +50,12 @@
                 return `<a href="${url}" target="_blank">${data}</a>`;
               } : undefined
             }));
+
             $('#dataTable').DataTable({
               data,
               columns,
-              responsive: true
+              responsive: true,
+              order: [[0, 'desc']] // Date列（0番目）を新しい順に並べる
             });
           }
         });
