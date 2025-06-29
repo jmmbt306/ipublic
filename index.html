@@ -2,50 +2,53 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>固定CSV 表示</title>
+  <title>CSV表示（リンク付き）</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
     table {
-      border-collapse: collapse;
       width: 100%;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #999;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #eee;
     }
   </style>
 </head>
 <body>
+  <h2>CSVデータ表示（Ticker にリンク付き）</h2>
+  <table id="dataTable" class="display"></table>
 
-  <h2>CSVファイル「data.csv」の内容</h2>
-  <div id="output">読み込み中...</div>
+  <!-- JSライブラリ -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
   <script>
+    // ページ読み込み時に data.csv を読み込む
     fetch('df.csv')
       .then(response => response.text())
       .then(csvText => {
-        const rows = csvText.trim().split('\n').map(r => r.split(','));
-        let html = '<table>';
-        rows.forEach((row, i) => {
-          html += '<tr>';
-          row.forEach(cell => {
-            html += i === 0
-              ? `<th>${cell.trim()}</th>`
-              : `<td>${cell.trim()}</td>`;
-          });
-          html += '</tr>';
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: function(results) {
+            const data = results.data;
+            const columns = Object.keys(data[0]).map(key => ({
+              title: key,
+              data: key,
+              render: key === 'Ticker' ? function(data, type, row) {
+                const url = `https://finance.yahoo.com/quote/${data}`;
+                return `<a href="${url}" target="_blank">${data}</a>`;
+              } : undefined
+            }));
+
+            $('#dataTable').DataTable({
+              data: data,
+              columns: columns
+            });
+          }
         });
-        html += '</table>';
-        document.getElementById('output').innerHTML = html;
-      })
-      .catch(err => {
-        document.getElementById('output').textContent = '読み込みエラー: ' + err;
       });
   </script>
-
 </body>
 </html>
