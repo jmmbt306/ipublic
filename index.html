@@ -2,12 +2,17 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>CSV表示（リンク付き）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV表示（スマホ対応・リンク付き）</title>
+
+  <!-- DataTables + Responsive CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
+      padding: 10px;
     }
     table {
       width: 100%;
@@ -16,17 +21,20 @@
 </head>
 <body>
   <h2>CSVデータ表示（Ticker にリンク付き）</h2>
-  <table id="dataTable" class="display"></table>
+  <table id="dataTable" class="display nowrap" style="width:100%"></table>
 
   <!-- JSライブラリ -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
   <script>
-    // ページ読み込み時に data.csv を読み込む
     fetch('df.csv')
-      .then(response => response.text())
+      .then(response => {
+        if (!response.ok) throw new Error("CSV ファイルの読み込みに失敗しました");
+        return response.text();
+      })
       .then(csvText => {
         Papa.parse(csvText, {
           header: true,
@@ -36,18 +44,21 @@
             const columns = Object.keys(data[0]).map(key => ({
               title: key,
               data: key,
-              render: key === 'Ticker' ? function(data, type, row) {
+              render: key === 'Ticker' ? function(data) {
                 const url = `https://finance.yahoo.com/quote/${data}`;
                 return `<a href="${url}" target="_blank">${data}</a>`;
               } : undefined
             }));
-
             $('#dataTable').DataTable({
-              data: data,
-              columns: columns
+              data,
+              columns,
+              responsive: true
             });
           }
         });
+      })
+      .catch(err => {
+        document.body.innerHTML += `<p style="color:red;">エラー: ${err.message}</p>`;
       });
   </script>
 </body>
