@@ -41,7 +41,7 @@
           skipEmptyLines: true,
           complete: function(results) {
             const data = results.data;
-
+  
             const columns = Object.keys(data[0]).map(key => ({
               title: key,
               data: key,
@@ -50,13 +50,14 @@
                 return `<a href="${url}" target="_blank">${data}</a>`;
               } : undefined
             }));
-
             $('#dataTable').DataTable({
               data,
               columns,
               responsive: true,
-              order: [[0, 'desc']] // Date列（0番目）を新しい順に並べる
-            });
+              order: [[0, 'desc']],
+              dom: 't',
+              paging: false // ←これが全件表示の決め手
+            });   
           }
         });
       })
