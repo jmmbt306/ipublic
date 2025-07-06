@@ -20,7 +20,7 @@
     }
 
     table {
-      width: max-content; /* 必要なだけ幅を確保 */
+      width: max-content;
       border-collapse: collapse;
     }
 
@@ -28,6 +28,13 @@
       white-space: nowrap;
       padding: 8px;
       border: 1px solid #ccc;
+    }
+
+    /* ソートアイコン非表示 */
+    th.sorting::after,
+    th.sorting_asc::after,
+    th.sorting_desc::after {
+      display: none !important;
     }
   </style>
 </head>
@@ -67,10 +74,13 @@
             $('#dataTable').DataTable({
               data,
               columns,
-              responsive: false,        // 展開不要で全列表示
-              order: [[0, 'desc']],     // Date列が0番目と仮定
-              dom: 't',                 // 検索・件数選択など非表示
-              paging: false             // 全件表示
+              responsive: false,
+              dom: 't',
+              paging: false,
+              order: [],  // 初期ソートなし
+              columnDefs: [
+                { orderable: false, targets: '_all' } // 全列でソート無効
+              ]
             });
           }
         });
