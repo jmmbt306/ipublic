@@ -1,43 +1,46 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Purchase Data</title>
 
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
 
-  
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 10px;
     }
+
     .table-container {
-      overflow-x: auto; /* 横スクロール対応 */
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
+
     table {
-      width: 100%;
+      width: max-content; /* 必要なだけ幅を確保 */
       border-collapse: collapse;
     }
+
     table td, table th {
-      white-space: nowrap; /* テキストが折り返されず横スクロールに */
+      white-space: nowrap;
+      padding: 8px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
   <h2>Purchase Data</h2>
   <div class="table-container">
-    <table id="dataTable" class="display nowrap" style="width:100%"></table>
+    <table id="dataTable" class="display nowrap"></table>
   </div>
 
   <!-- JSライブラリ -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
   <script>
     fetch('df.csv')
@@ -64,10 +67,10 @@
             $('#dataTable').DataTable({
               data,
               columns,
-              responsive: true,
-              order: [[0, 'desc']], // 日付の列が0番目の場合
-              dom: 't',              // テーブル本体のみ表示（検索・件数選択なし）
-              paging: false          // 全件表示
+              responsive: false,        // 展開不要で全列表示
+              order: [[0, 'desc']],     // Date列が0番目と仮定
+              dom: 't',                 // 検索・件数選択など非表示
+              paging: false             // 全件表示
             });
           }
         });
